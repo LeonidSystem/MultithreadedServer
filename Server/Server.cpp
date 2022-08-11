@@ -18,24 +18,14 @@ static void sighandler(int sig)
 void* cryptoFunc(void *arg) 
 {
     argFunc *argCrypto = (argFunc*)arg;
-    std::string resCrypto, hashString, encoded;
+    std::string resCrypto, encoded, decoded;
     resCrypto = "cryptoFunc: ";
 
-    CryptoPP::SHA1 hash;
-    hash.Update((const CryptoPP::byte*)(argCrypto->buf + 7), 32);
-    hashString.resize(hash.DigestSize());
-    hash.Final((CryptoPP::byte*)&hashString[0]);
+    std::string argCryptoBuf(argCrypto->buf);
 
-    CryptoPP::HexEncoder encoder;
-    encoder.Put((CryptoPP::byte*)&hashString[0], hashString.size());
-    encoder.MessageEnd();
-    int sizeEncoded = encoder.MaxRetrievable();
-    std::cout << hashString.size() << std::endl;
-    if (sizeEncoded) 
-    {
-        encoder.Get((CryptoPP::byte*)&encoded[0], sizeEncoded);
-        std::cout << encoded << std::endl;
-    }
+    CryptoPP::SHA1 hash;
+    CryptoPP::StringSource(argCryptoBuf, true, new CryptoPP::HashFilter(hash, new CryptoPP::StringSink(decoded)));
+    CryptoPP::StringSource(decoded, true, new CryptoPP::HexEncoder(new CryptoPP::StringSink(encoded)));
 
     resCrypto += "before encode - ";
     resCrypto += argCrypto->buf;
