@@ -7,7 +7,7 @@ void ThreadPool::idleThread(ThreadPool *threadPool)
     while (1) 
     {
         std::unique_lock uniqueLock(threadPool->mutexThreadPool);
-        threadPool->condThreadPool.wait_for(uniqueLock, 2000 * std::chrono::milliseconds(1), [&]{return threadPool->canTakeTask || flagShutdown;});
+        threadPool->condThreadPool.wait_for(uniqueLock, 2000 * millisec, [&]{return threadPool->canTakeTask || flagShutdown;});
 
         if (!threadPool->IsEmptyQueueTasks()) 
         {
@@ -37,7 +37,6 @@ void ThreadPool::Initialize()
 
 void ThreadPool::AddTask(TaskWrapper &&taskWrapper) 
 {
-    //std::cout << "ThreadPool: AddTask" << std::endl;
     spinlockThreadPool.Lock();
     queueTasks.push(taskWrapper);
     spinlockThreadPool.Unlock();
@@ -49,7 +48,6 @@ void ThreadPool::PopTask()
     {
         return;
     }
-    //std::cout << "ThreadPool: PopTask" << std::endl;
     canTakeTask = true;
     ++requestCounter;
     condThreadPool.notify_one();

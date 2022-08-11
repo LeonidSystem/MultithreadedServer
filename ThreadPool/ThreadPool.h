@@ -28,7 +28,7 @@ class ThreadPool
         std::mutex mutexThreadPool;
         std::condition_variable condThreadPool;
 
-        int numThreads = 2;//std::thread::hardware_concurrency();
+        int numThreads = 2;//std::thread::hardware_concurrency() - 1;
         int requestCounter = 0;
         bool canTakeTask = false;
 

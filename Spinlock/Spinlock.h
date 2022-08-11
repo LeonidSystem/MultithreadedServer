@@ -5,13 +5,14 @@
 #include <thread>
 #include <chrono>
 
+extern std::chrono::milliseconds millisec;
 class Spinlock 
 {
     private:
-        std::atomic_flag spinlock;
+        std::atomic_flag spinlock = ATOMIC_FLAG_INIT;
 
     public:
-        Spinlock() : spinlock(ATOMIC_FLAG_INIT) {}
+        Spinlock() = default;
         void Lock();
         void Unlock();
 };
